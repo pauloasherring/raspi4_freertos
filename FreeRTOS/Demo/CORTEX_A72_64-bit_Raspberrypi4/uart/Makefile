@@ -1,4 +1,15 @@
-CROSS ?= aarch64-none-elf-
+# To keep compatibility with orignal work, check if CROSS is defined
+# and if so, override CC, OBJDUMP, AS and OBJCOPY, which are used
+# by yocto by default.
+# Had to remove the default weak asignment for CROSS, otherwise, this
+# would not work.
+ifdef CROSS
+	CC=$(CROSS)gcc
+	OBJDUMP=$(CROSS)objdump
+	AS=$(CROSS)as
+	OBJCOPY=$(CROSS)objcopy
+endif
+
 CFLAGS = -mcpu=cortex-a72 \
          -fpic \
          -ffreestanding \
@@ -52,38 +63,40 @@ OBJS +=build/timers.o
 OBJS +=build/heap_1.o
 
 uart.elf : src/raspberrypi4.ld $(OBJS)
-	$(CROSS)gcc -Wl,--build-id=none -std=gnu99 -T src/raspberrypi4.ld -o $@ -ffreestanding -nostdlib --specs=nosys.specs $(BUILTIN_OPS) $(OBJS)
-	$(CROSS)objdump -d uart.elf > uart.list
+	$(CC) -Wl,--build-id=none -std=gnu99 -T src/raspberrypi4.ld -o $@ -ffreestanding -nostdlib --specs=nosys.specs $(BUILTIN_OPS) $(OBJS)
+	$(OBJDUMP) -d uart.elf > uart.list
+	$(OBJCOPY) -O binary uart.elf uart.bin
 
 build/%.o : src/%.S
-	$(CROSS)as $(ASMFLAGS) -c -o $@ $<
+	$(AS) $(ASMFLAGS) -c -o $@ $<
 	
 build/%.o : src/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../mmu/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../cache/%.S
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../musl_libc/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../../../Source/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../../../Source/portable/GCC/ARM_CA72_64_BIT/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 build/%.o : ../../../Source/portable/GCC/ARM_CA72_64_BIT/%.S
-	$(CROSS)as $(ASMFLAGS) -c -o $@ $<
+	$(AS) $(ASMFLAGS) -c -o $@ $<
 
 build/%.o : ../../../Source/portable/MemMang/%.c
-	$(CROSS)gcc $(CFLAGS)  -c -o $@ $<
+	$(CC) $(CFLAGS)  -c -o $@ $<
 
 clean :
 	rm -f build/*.o
 	rm -f *.elf
 	rm -f *.list
+	rm -f *.bin
 

@@ -2,5 +2,11 @@ FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/project/.settings
 FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/project/Debug
 FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/project/Release
 FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/build
-
+FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/*.elf
+FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/*.bin
+FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/*/*.list
 FreeRTOS/Demo/CORTEX_A72_64-bit_Raspberrypi4/rpsmg_ping
+build/**/*.o
+/*.bin
+/*.elf
+/*.list
